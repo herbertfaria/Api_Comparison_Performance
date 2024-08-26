@@ -1,0 +1,16 @@
+GET http://localhost:3000/pessoa
+Content-Type: application/json
+
+###
+GET http://localhost:3000/pessoa/00000000001
+Content-Type: application/json
+
+###
+POST http://localhost:3000/pessoa
+Content-Type: application/json
+
+ {
+        "cpf": "00000000001",
+        "nome": "Pessoa Jaca 1",
+        "idade": 11
+    }

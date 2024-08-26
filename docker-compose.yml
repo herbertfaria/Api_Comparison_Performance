@@ -1,0 +1,74 @@
+version: '3.4'
+
+services:
+  net-nodes-db:
+    image: postgres:latest
+    container_name: pessoal_db
+    environment:
+      - POSTGRES_USER=net8
+      - POSTGRES_PASSWORD=net8
+      - POSTGRES_DB=netvsnodes
+    volumes:
+      - ~/db/back:/var/lib/postgresql/data
+    ports:
+      - 5432:5432   
+    networks:
+      - net-nodes 
+
+  net-nodes-net:
+    image: net-webapi
+    build:
+      context: .
+      dockerfile: Code/net.webapi/Dockerfile
+      args:
+        - configuration=release
+    ports:
+      - 8080:8080
+      - 8081:8081
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=netwebapi
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/netwebapi.pfx
+    depends_on:
+      - net-nodes-db
+    volumes:
+      - ~/.aspnet/https:/https:ro
+    networks:
+      - net-nodes 
+    deploy:
+        resources:
+            limits:
+              cpus: 0.50
+              memory: 512M
+            reservations:
+              cpus: 0.25
+              memory: 128M
+
+  net-nodes-nest:
+    image: nestjs-webapi
+    build:
+      context: Code/nodejs-nestjs
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production   
+      DATABASE_URL: postgresql://net8:net8@net-nodes-db:5432/netvsnodes?schema=public 
+    ports:
+      - 3000:3000
+    depends_on:
+      - net-nodes-db
+    networks:
+      - net-nodes
+    deploy:
+        resources:
+            limits:
+              cpus: 0.50
+              memory: 512M
+            reservations:
+              cpus: 0.25
+              memory: 128M
+    
+networks:
+  net-nodes:
+    driver: bridge
+

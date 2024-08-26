@@ -1,0 +1,21 @@
+version: '3.4'
+
+services:
+  net-nodes-db:
+    image: postgres:latest
+    container_name: pessoal_db
+    environment:
+      - POSTGRES_USER=net8
+      - POSTGRES_PASSWORD=net8
+      - POSTGRES_DB=netvsnodes
+    volumes:
+      - ~/db/back:/var/lib/postgresql/data
+      - ./Code/postgresql:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432   
+    networks:
+      - net-nodes 
+networks:
+  net-nodes:
+    driver: bridge
+

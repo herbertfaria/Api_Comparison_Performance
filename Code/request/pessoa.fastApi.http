@@ -1,0 +1,16 @@
+GET http://localhost:8000/api/pessoa?limit=10
+Content-Type: application/json
+
+###
+GET http://localhost:8000/api/pessoa/00000000003/
+Content-Type: application/json
+
+###
+POST http://localhost:8000/api/pessoa
+Content-Type: application/json
+
+ {
+        "cpf": "00000000005",
+        "nome": "Pessoa Jaca 4",
+        "idade": 14
+    }

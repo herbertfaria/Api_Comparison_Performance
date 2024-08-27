@@ -18,7 +18,7 @@ def get_db():
 
 
 @app.post("/api/pessoa", response_model=schemas.Pessoa)
-def create(pessoa: schemas.PessoaCreate, db: Session = Depends(get_db)):
+def create(pessoa: schemas.Pessoa, db: Session = Depends(get_db)):
     pessoa = crud.get_pessoa_by_cpf(db, cpf=pessoa.cpf)
     if pessoa:
         raise HTTPException(status_code=400, detail="Pessoa já existe")

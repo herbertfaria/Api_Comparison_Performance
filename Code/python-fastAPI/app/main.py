@@ -1,7 +1,9 @@
+import os
+import uvicorn
+import crud,models,schemas
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-import crud,models, schemas
 from database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
@@ -19,8 +21,8 @@ def get_db():
 
 @app.post("/api/pessoa", response_model=schemas.Pessoa)
 def create(pessoa: schemas.Pessoa, db: Session = Depends(get_db)):
-    pessoa = crud.get_pessoa_by_cpf(db, cpf=pessoa.cpf)
-    if pessoa:
+    pessoaDb = crud.get_pessoa_by_cpf(db, cpf=pessoa.cpf)
+    if pessoaDb:
         raise HTTPException(status_code=400, detail="Pessoa já existe")
     return crud.create_pessoa(db, pessoa=pessoa)
 
@@ -36,3 +38,7 @@ def get_user(cpf:str, db:Session=Depends(get_db)):
     if pessoa is None:
         raise HTTPException(status_code=404, detail="User not found")
     return pessoa
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))

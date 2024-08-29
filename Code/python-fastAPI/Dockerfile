@@ -1,32 +1,47 @@
-FROM python:3.9
+# For more information, please refer to https://aka.ms/vscode-docker-python
+# FROM python:3.9
 
+# EXPOSE 8000
 
-WORKDIR /app
+# # Keeps Python from generating .pyc files in the container
+# ENV PYTHONDONTWRITEBYTECODE=1
 
+# # Turns off buffering for easier container logging
+# ENV PYTHONUNBUFFERED=1
 
-ADD requirements /app/requirements/
-ADD requirements.txt /app/requirements.txt
+# # Install pip requirements
+# COPY requirements.txt .
+# RUN python -m pip install -r requirements.txt
 
+# WORKDIR /app
+# COPY . /app
 
-RUN python -m venv /env \
-&& /env/bin/pip install --upgrade pip \
-&& /env/bin/pip install --no-cache-dir -r /app/requirements.txt
+# # Creates a non-root user with an explicit UID and adds permission to access the /app folder
+# # For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
+# RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+# USER appuser
 
+# # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
+# CMD ["uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8080"]
 
-RUN apt-get update && apt-get install -y apt-transport-https ca-certificates curl gnupg && \
-curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | apt-key add - && \
-echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | tee /etc/apt/sources.list.d/doppler-cli.list && \
-apt-get update
+# FROM python:3.9
+# ARG POSTGRES_SERVER
+# ENV APP_HOME=/home/app/web
+# RUN mkdir -p $APP_HOME
+# WORKDIR $APP_HOME
 
+# RUN apk update && apk add --no-cache bash
+# ADD requirements.txt $APP_HOME
+# RUN pip install -r $APP_HOME/requirements.txt
+# # Install FastAPI and Uvicorn
+# RUN pip install fastapi uvicorn
 
-ADD . /app
+# COPY src/ $APP_HOME
+# CMD ["uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8080"]
 
-
-ENV VIRTUAL_ENV /env
-ENV PATH /env/bin:$PATH
-
-
-EXPOSE 8000
-
-
-CMD uvicorn app.main:app
+FROM python:3.10
+WORKDIR /code
+COPY ./requirements.txt /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+COPY ./ /code
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

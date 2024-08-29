@@ -14,16 +14,21 @@ services:
       - 5432:5432   
     networks:
       - net-nodes 
-  net-nodes-nest:
-    image: nestjs-webapi
+  net-nodes-fastapi:
+    image: fastapi-webapi
     build:
-      context: Code/nodejs-nestjs/app-prisma
+      context: Code/python-fastAPI
       dockerfile: ./Dockerfile
+    # command: uvicorn Code.python-fastAPI.app.main:app --host 0.0.0.0
+    volumes:
+      - .:/app
     environment:
       NODE_ENV: production   
       DATABASE_URL: postgresql://net8:net8@net-nodes-db:5432/netvsnodes?schema=public 
+    expose:
+      - 8000
     ports:
-      - 3000:3000
+      - 8000:8000
     depends_on:
       - net-nodes-db
     networks:

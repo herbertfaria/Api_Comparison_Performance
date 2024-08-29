@@ -13,3 +13,4 @@ class Pessoa(PessoaBase):
     cpf : str
     class Config:
         orm_mode = True
+

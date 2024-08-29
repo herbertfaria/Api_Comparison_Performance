@@ -17,7 +17,7 @@ services:
   net-nodes-nest:
     image: nestjs-webapi
     build:
-      context: Code/nodejs-nestjs/app-prisma
+      context: Code/nodejs-nestjs
       dockerfile: ./Dockerfile
     environment:
       NODE_ENV: production   
